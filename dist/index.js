@@ -8,12 +8,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const requestHandler = function (req, res) {
   res.writeHead(200, {
-    'Content-Type': "text/plain"
+    'Content-Type': 'text/plain'
   });
   res.end('Hello, World!');
 };
 
 const server = _http.default.createServer(requestHandler);
 
-server.listen(8008); // Hello
-// oknpm i
+server.listen(8008);
