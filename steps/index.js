@@ -1,12 +1,17 @@
 import superagent from 'superagent';
 import { When, Then } from 'cucumber';
+import { AssertionError } from 'assert';
+import assert from 'assert';
+
 let request;
 let result;
 let error;
 let payload;
 
+require('dotenv').config()
+
 When('the client creates a POST request to /users', function () {
-  request = superagent('POST', 'localhost:8008/users');
+  request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);
 });
 
 When('attaches a generic empty payload', function () {
@@ -26,9 +31,8 @@ When('sends the request', function (callback) {
 });
 
 Then('our API should respond with a 400 HTTP status code', function () {
-  if (error.statusCode !== 400) {
-    throw new Error();
-  }
+  const response = result || error;
+  assert.equal(response.statusCode, 400);
 });
 
 Then('the payload of the response should be a JSON object', function () {
@@ -49,7 +53,5 @@ Then('the payload of the response should be a JSON object', function () {
 });
 
 Then('contains a message property which says "Payload should not be empty"', function () {
-  if (payload.message !== 'Payload should not be empty') {
-    throw new Error();
-  }
+  assert.equal(payload.message, 'Payload should not be empty');
 });

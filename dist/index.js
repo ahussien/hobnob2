@@ -6,6 +6,8 @@ require("@babel/polyfill");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+require('dotenv').config();
+
 const requestHandler = function (req, res) {
   if (req.method === 'POST' && req.url === '/users') {
     res.writeHead(400, {
@@ -25,4 +27,4 @@ const requestHandler = function (req, res) {
 
 const server = _http.default.createServer(requestHandler);
 
-server.listen(8008);
+server.listen(process.env.SERVER_PORT);

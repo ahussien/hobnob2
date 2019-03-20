@@ -1,5 +1,6 @@
 import http from 'http';
 import '@babel/polyfill';
+require('dotenv').config()
 
 const requestHandler = function (req, res) {
   if (req.method === 'POST' && req.url === '/users') {
@@ -12,4 +13,4 @@ const requestHandler = function (req, res) {
   res.end('Hello, World! OK');
 };
 const server = http.createServer(requestHandler);
-server.listen(8008);
+server.listen(process.env.SERVER_PORT);
