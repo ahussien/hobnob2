@@ -1,6 +1,7 @@
 import http from 'http';
 import '@babel/polyfill';
-require('dotenv').config()
+
+require('dotenv').config();
 
 const requestHandler = function (req, res) {
   if (req.method === 'POST' && req.url === '/users') {
@@ -11,7 +12,7 @@ const requestHandler = function (req, res) {
       payloadData.push(data);
     });
 
-    
+
     req.on('end', () => {
       if (payloadData.length === 0) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -37,7 +38,7 @@ const requestHandler = function (req, res) {
         }));
       }
     });
-  }else {
+  } else {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Hello, World! OK');
   }
