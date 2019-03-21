@@ -55,3 +55,32 @@ Then('the payload of the response should be a JSON object', function () {
 Then('contains a message property which says "Payload should not be empty"', function () {
   assert.equal(payload.message, 'Payload should not be empty');
 });
+
+// Secnario 2
+
+When('attaches a generic non-JSON payload', function () {
+  request.send('<?xml version="1.0" encoding="UTF-8" ?><email>dan@danyll.com</email>');
+  request.set('Content-Type', 'text/xml');
+});
+
+Then('our API should respond with a 415 HTTP status code', function () {
+  const response = result || error;
+  assert.equal(response.statusCode, 415);
+});
+
+
+Then(/^contains a message property which says 'The "Content-Type" header must always be "application\/json"'$/, function () {
+  assert.equal(payload.message, 'The "Content-Type" header must always be "application/json"');
+});
+
+//Scanrio 3
+When('attaches a generic malformed payload', function () {
+  request.send('{"email": "dan@danyll.com", name: }');
+  request.set('Content-Type', 'application/json');
+});
+
+Then('contains a message property which says "Payload should be in JSON format"', function () {
+  assert.equal(payload.message, 'Payload should be in JSON format');
+});
+
+
