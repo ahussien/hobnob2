@@ -1,62 +1,50 @@
 "use strict";
 
-var _http = _interopRequireDefault(require("http"));
-
 require("@babel/polyfill");
+
+var _express = _interopRequireDefault(require("express"));
+
+var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//import http from 'http';
 require('dotenv').config();
 
-const requestHandler = function (req, res) {
-  if (req.method === 'POST' && req.url === '/users') {
-    // res.writeHead(400, { 'Content-Type': 'application/json' });
-    // res.end(JSON.stringify({ message: 'Payload should not be empty' }));
-    const payloadData = [];
-    req.on('data', data => {
-      payloadData.push(data);
-    });
-    req.on('end', () => {
-      if (payloadData.length === 0) {
-        res.writeHead(400, {
-          'Content-Type': 'application/json'
-        });
-        res.end(JSON.stringify({
-          message: 'Payload should not be empty'
-        }));
-        return;
-      }
+const app = (0, _express.default)(); //Middlewares
 
-      if (req.headers['content-type'] !== 'application/json') {
-        res.writeHead(415, {
-          'Content-Type': 'application/json'
-        });
-        res.end(JSON.stringify({
-          message: 'The "Content-Type" header must always be "application/json"'
-        }));
-        return;
-      }
-
-      try {
-        const bodyString = Buffer.concat(payloadData).toString();
-        JSON.parse(bodyString);
-      } catch (e) {
-        res.writeHead(400, {
-          'Content-Type': 'application/json'
-        });
-        res.end(JSON.stringify({
-          message: 'Payload should be in JSON format'
-        }));
-      }
+app.use(_bodyParser.default.json({
+  limit: 1e6
+}));
+app.listen(process.env.SERVER_PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Hobnob API server listening on port ${process.env.SERVER_PORT}!`);
+});
+app.get('/', (req, res) => {
+  res.send('Hello, World! OK 222');
+});
+app.post('/users', (req, res) => {
+  if (req.headers['content-length'] === 0) {
+    res.status(400);
+    res.set('Content-Type', 'application/json');
+    res.json({
+      message: 'Payload should not be empty'
     });
-  } else {
-    res.writeHead(200, {
-      'Content-Type': 'text/plain'
-    });
-    res.end('Hello, World! OK');
+    return;
   }
-};
 
-const server = _http.default.createServer(requestHandler);
+  if (req.headers['content-type'] !== 'application/json') {
+    res.status(415);
+    res.set('Content-Type', 'application/json');
+    res.json({
+      message: 'The "Content-Type" header must always be "application/json"'
+    });
+    return;
+  }
 
-server.listen(process.env.SERVER_PORT);
+  res.status(400);
+  res.set('Content-Type', 'application/json');
+  res.json({
+    message: 'Payload should be in JSON format'
+  });
+});
