@@ -3,6 +3,8 @@ import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
+import createUser from './handlers/users/create'
+import injectHandlerDependencies from './utils/inject-handler-dependencies';
 require('dotenv').config();
 
 
@@ -26,36 +28,4 @@ app.get('/', (req, res) => {
   res.send('Hello, World! OK 222');
 });
 
-app.post('/users', (req, res) => {
-  if (req.headers['content-length'] === 0) {
-    res.status(400);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'Payload should not be empty',
-    });
-    return;
-  }
-  if (req.headers['content-type'] !== 'application/json') {
-    res.status(415);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'The "Content-Type" header must always be "application/json"',
-    });
-    return;
-  }
-  client.index({
-    index: 'hobnob',
-    type: 'user',
-    body: req.body,
-  }).then((result) => {
-    res.status(201);
-    res.set('Content-Type', 'text/plain');
-    res.send(result._id);
-  }).catch(() => {
-    res.status(500);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'Internal Server Error'
-    });
-  });
-});
+app.post('/users',injectHandlerDependencies(createUser,client));

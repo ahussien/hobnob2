@@ -8,6 +8,10 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var _elasticsearch = _interopRequireDefault(require("elasticsearch"));
 
+var _create = _interopRequireDefault(require("./handlers/users/create"));
+
+var _injectHandlerDependencies = _interopRequireDefault(require("./utils/inject-handler-dependencies"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //import http from 'http';
@@ -28,38 +32,4 @@ app.listen(process.env.SERVER_PORT, () => {
 app.get('/', (req, res) => {
   res.send('Hello, World! OK 222');
 });
-app.post('/users', (req, res) => {
-  if (req.headers['content-length'] === 0) {
-    res.status(400);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'Payload should not be empty'
-    });
-    return;
-  }
-
-  if (req.headers['content-type'] !== 'application/json') {
-    res.status(415);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'The "Content-Type" header must always be "application/json"'
-    });
-    return;
-  }
-
-  client.index({
-    index: 'hobnob',
-    type: 'user',
-    body: req.body
-  }).then(result => {
-    res.status(201);
-    res.set('Content-Type', 'text/plain');
-    res.send(result._id);
-  }).catch(() => {
-    res.status(500);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'Internal Server Error'
-    });
-  });
-});
+app.post('/users', (0, _injectHandlerDependencies.default)(_create.default, client));
