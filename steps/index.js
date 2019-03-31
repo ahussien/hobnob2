@@ -2,13 +2,20 @@ import superagent from 'superagent';
 import { When, Then } from 'cucumber';
 import { AssertionError } from 'assert';
 import assert from 'assert';
+import elasticsearch from 'elasticsearch';
 
 let request;
 let result;
 let error;
 let payload;
 
+
+
 require('dotenv').config()
+
+const client = new elasticsearch.Client({
+  host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+});
 
 When('the client creates a POST request to /users', function () {
   request = superagent('POST', `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`);

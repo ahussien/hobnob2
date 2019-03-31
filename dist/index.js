@@ -6,11 +6,16 @@ var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
+var _elasticsearch = _interopRequireDefault(require("elasticsearch"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //import http from 'http';
 require('dotenv').config();
 
+const client = new _elasticsearch.default.Client({
+  host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`
+});
 const app = (0, _express.default)(); //Middlewares
 
 app.use(_bodyParser.default.json({
@@ -42,9 +47,19 @@ app.post('/users', (req, res) => {
     return;
   }
 
-  res.status(400);
-  res.set('Content-Type', 'application/json');
-  res.json({
-    message: 'Payload should be in JSON format'
+  client.index({
+    index: 'hobnob',
+    type: 'user',
+    body: req.body
+  }).then(result => {
+    res.status(201);
+    res.set('Content-Type', 'text/plain');
+    res.send(result._id);
+  }).catch(() => {
+    res.status(500);
+    res.set('Content-Type', 'application/json');
+    res.json({
+      message: 'Internal Server Error'
+    });
   });
 });

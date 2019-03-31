@@ -2,8 +2,13 @@
 import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
-
+import elasticsearch from 'elasticsearch';
 require('dotenv').config();
+
+
+const client = new elasticsearch.Client({
+  host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
+});
 
 const app = express();
 
@@ -38,9 +43,19 @@ app.post('/users', (req, res) => {
     });
     return;
   }
-  res.status(400);
-  res.set('Content-Type', 'application/json');
-  res.json({
-    message: 'Payload should be in JSON format',
+  client.index({
+    index: 'hobnob',
+    type: 'user',
+    body: req.body,
+  }).then((result) => {
+    res.status(201);
+    res.set('Content-Type', 'text/plain');
+    res.send(result._id);
+  }).catch(() => {
+    res.status(500);
+    res.set('Content-Type', 'application/json');
+    res.json({
+      message: 'Internal Server Error'
+    });
   });
 });
