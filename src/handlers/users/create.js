@@ -16,7 +16,7 @@ function createUser(req, res, db) {
       return;
     }
     db.index({
-      index: 'hobnob',
+      index: process.env.ELASTICSEARCH_INDEX,
       type: 'user',
       body: req.body,
     }).then((result) => {
