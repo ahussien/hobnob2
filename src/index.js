@@ -3,8 +3,11 @@ import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
-import createUser from './handlers/users/create'
 import injectHandlerDependencies from './utils/inject-handler-dependencies';
+
+import createUser from './handlers/users/create'
+import getUsers from './handlers/users/get-users'
+
 require('dotenv').config();
 
 
@@ -25,7 +28,8 @@ app.listen(process.env.SERVER_PORT, () => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Hello, World! OK 222');
+  res.send('This is an elastic search app');
 });
 
+app.get('/users', injectHandlerDependencies(getUsers,client))
 app.post('/users',injectHandlerDependencies(createUser,client));

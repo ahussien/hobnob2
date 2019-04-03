@@ -8,9 +8,11 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var _elasticsearch = _interopRequireDefault(require("elasticsearch"));
 
+var _injectHandlerDependencies = _interopRequireDefault(require("./utils/inject-handler-dependencies"));
+
 var _create = _interopRequireDefault(require("./handlers/users/create"));
 
-var _injectHandlerDependencies = _interopRequireDefault(require("./utils/inject-handler-dependencies"));
+var _getUsers = _interopRequireDefault(require("./handlers/users/get-users"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,6 +32,7 @@ app.listen(process.env.SERVER_PORT, () => {
   console.log(`Hobnob API server listening on port ${process.env.SERVER_PORT}!`);
 });
 app.get('/', (req, res) => {
-  res.send('Hello, World! OK 222');
+  res.send('This is an elastic search app');
 });
+app.get('/users', (0, _injectHandlerDependencies.default)(_getUsers.default, client));
 app.post('/users', (0, _injectHandlerDependencies.default)(_create.default, client));
