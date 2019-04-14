@@ -4,7 +4,7 @@
   "description": "test project ",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && babel src -d dist",
+    "build": "rimraf dist && babel src -d dist --copy-files",
     "serve": "npm run build && node --inspect dist/index.js",
     "test:e2e": "cucumber-js features --require-module @babel/register --require steps",
     "watch": "nodemon -w src --exec npm run serve",
