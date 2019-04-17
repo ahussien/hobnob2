@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rimraf dist && babel src -d dist --copy-files",
     "serve": "npm run build && node --inspect dist/index.js",
+    "test:unit": "mocha 'src/**/*.test.js' --require @babel/register",
     "test:e2e": "cucumber-js features --require-module @babel/register --require steps",
     "watch": "nodemon -w src --exec npm run serve",
     "fix": "eslint src --fix",
@@ -36,6 +37,7 @@
     "elasticsearch": "^15.4.1",
     "express": "^4.16.4",
     "husky": "^1.3.1",
+    "mocha": "^6.1.3",
     "nodemon": "^1.18.10",
     "rimraf": "^2.6.3",
     "superagent": "^4.1.0"
