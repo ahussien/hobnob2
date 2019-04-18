@@ -6,16 +6,22 @@ const createStubs = {
     success: stub().resolves({ _id: 'foo'}),
     otherError: stub().rejects(new Error()),
   }
+  const req= spy();
+  const res= {
+    status:spy(),
+    set:spy(),
+    send:spy(),
+    json:spy()
 
-describe('create', function () {
-    it('should return the correct sum of two numbers', function () {
-      const next = spy();
-      next();
-      assert(next.calledOnce);
+  }
+  const db= spy();
 
+  describe("When create resolves with the new user's ID", function () {
+    beforeEach(function () {
+      create(req, res, db, createStubs.success);
     });
 
-    it('should return the correct sum of two numbers', function () {
-      assert.equal(Sum(1,2), 3);
-    });  
+    it('should call res.status() once', function () {
+      assert(res.status.calledOnce);
+    });
   });
