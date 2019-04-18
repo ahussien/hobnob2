@@ -8,8 +8,15 @@ import injectHandlerDependencies from './utils/inject-handler-dependencies';
 import createUser from './handlers/users/create'
 import getUsers from './handlers/users/get-users'
 
+import createUserEngine from './engines/users/createUser'
+import getUsersEngine from './engines/users/getUsers'
+
 require('dotenv').config();
 
+const handlerToEngineMap = new Map([
+  [createUser, createUserEngine],
+  [getUsers, getUsersEngine],
+]);
 
 const client = new elasticsearch.Client({
   host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
@@ -31,5 +38,7 @@ app.get('/', (req, res) => {
   res.send('This is an elastic search app');
 });
 
-app.get('/users', injectHandlerDependencies(getUsers,client))
-app.post('/users',injectHandlerDependencies(createUser,client));
+
+
+app.get('/users', injectHandlerDependencies(getUsers,client, handlerToEngineMap))
+app.post('/users',injectHandlerDependencies(createUser,client, handlerToEngineMap));

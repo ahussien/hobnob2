@@ -1,9 +1,8 @@
-import createUserEngine from '../../engines/users/createUser'
 import Ajv from 'ajv';
 import profileSchema from '../../schema/users/profile.json';
 import createUserSchema from '../../schema/users/create.json';
 
-function create(req, res, db) {
+function create(req, res, db, create) {
   //validate User input
 
   const ajvValidate = new Ajv({allErrors: true})
@@ -18,7 +17,8 @@ function create(req, res, db) {
     res.json(ajvValidate.errors);
   }
 
-  createUserEngine(req,db).then((result) => {
+  create(req,db)
+  .then((result) => {
       res.status(201);
       res.set('Content-Type', 'text/plain');
       res.send(result._id);

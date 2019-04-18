@@ -1,7 +1,7 @@
-import  getUsersEngine from '../../engines/users/getUsers' 
-function getUsers(req, res, db) {
+function getUsers(req, res, db, getUsersEngine) {
 
-getUsersEngine(req,db).then((result) => {
+getUsersEngine(req,db, getUsersEngine)
+.then((result) => {
    res.status(201);
      res.set('Content-Type', 'text/plain');
      res.send(JSON.stringify(result));

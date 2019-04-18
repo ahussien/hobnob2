@@ -1,8 +1,13 @@
-import Sum from './helpers'
 import assert from 'assert';
-import { spy } from 'sinon';
+import { spy, stub } from 'sinon';
+import  create from './create'
 
-describe('Sum', function () {
+const createStubs = {
+    success: stub().resolves({ _id: 'foo'}),
+    otherError: stub().rejects(new Error()),
+  }
+
+describe('create', function () {
     it('should return the correct sum of two numbers', function () {
       const next = spy();
       next();
