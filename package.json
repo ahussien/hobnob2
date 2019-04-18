@@ -9,8 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon -w src --exec npm run serve",
     "fix": "eslint src --fix",
-    "lint": "eslint src",
-    "precommit": "npm run lint"
+    "lint": "eslint src"
   },
   "repository": {
     "type": "git",
