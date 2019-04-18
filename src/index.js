@@ -3,8 +3,20 @@ import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
+import injectHandlerDependencies from './utils/inject-handler-dependencies';
+
+import createUser from './handlers/users/create'
+import getUsers from './handlers/users/get-users'
+
+import createUserEngine from './engines/users/createUser'
+import getUsersEngine from './engines/users/getUsers'
+
 require('dotenv').config();
 
+const handlerToEngineMap = new Map([
+  [createUser, createUserEngine],
+  [getUsers, getUsersEngine],
+]);
 
 const client = new elasticsearch.Client({
   host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${process.env.ELASTICSEARCH_PORT}`,
@@ -23,39 +35,10 @@ app.listen(process.env.SERVER_PORT, () => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Hello, World! OK 222');
+  res.send('This is an elastic search app');
 });
 
-app.post('/users', (req, res) => {
-  if (req.headers['content-length'] === 0) {
-    res.status(400);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'Payload should not be empty',
-    });
-    return;
-  }
-  if (req.headers['content-type'] !== 'application/json') {
-    res.status(415);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'The "Content-Type" header must always be "application/json"',
-    });
-    return;
-  }
-  client.index({
-    index: 'hobnob',
-    type: 'user',
-    body: req.body,
-  }).then((result) => {
-    res.status(201);
-    res.set('Content-Type', 'text/plain');
-    res.send(result._id);
-  }).catch(() => {
-    res.status(500);
-    res.set('Content-Type', 'application/json');
-    res.json({
-      message: 'Internal Server Error'
-    });
-  });
-});
+
+
+app.get('/users', injectHandlerDependencies(getUsers,client, handlerToEngineMap))
+app.post('/users',injectHandlerDependencies(createUser,client, handlerToEngineMap));
