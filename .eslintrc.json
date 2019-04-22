@@ -13,5 +13,6 @@
         "sourceType": "module"
     },
     "rules": {
+        "prefer-arrow-callback": "off"
     }
 }
